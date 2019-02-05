@@ -34,7 +34,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
         button = findViewById(R.id.button);
         /*https://api.vk.com/method/users.get?user_id=124205288&v=5.92&access_token=51d3eced51d3eced51d3eced0d51bb81c1551d351d3eced0d868aad2dd1091212c1eb42*/
         button.setOnClickListener(v -> mainActivityPresenter.buttonClicked());
-
+        textView.setText("bolshoyKek");
 
     }
 
