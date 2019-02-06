@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 public class AppDeleagate extends Application {
+
     private static MainComponent mainComponent;
     private static Application application;
 

@@ -1,13 +1,10 @@
  package com.example.myapplication.Model;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
 
-import java.util.List;
+ import com.google.gson.annotations.Expose;
+ import com.google.gson.annotations.SerializedName;
 
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+ import java.util.List;
 
 public class ResponseVk {
 
@@ -22,12 +19,10 @@ public class ResponseVk {
     public void setResponse(List<VkUser> response) {
         this.response = response;
     }
-    @Entity
     public static class VkUser {
 
         @SerializedName("id")
         @Expose
-        @PrimaryKey
         private Integer id;
         @SerializedName("first_name")
         @Expose

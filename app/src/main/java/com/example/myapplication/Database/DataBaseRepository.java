@@ -2,51 +2,45 @@ package com.example.myapplication.Database;
 
 import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.util.Log;
 
-import com.example.myapplication.Model.ModelContract;
+import com.example.myapplication.Model.DataBaseModel;
 import com.example.myapplication.Model.ResponseVk;
 
+import java.util.List;
+
 import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class DataBaseRepository implements DatabaseContract {
+public class DataBaseRepository{
 
     private static final String TAG = "TAG";
     private final Database database;
-    private Disposable disposable;
 
     public DataBaseRepository(Context context) {
-        database = Room.databaseBuilder(context, Database.class,"bd4")
+        database = Room.databaseBuilder(context, Database.class,"be33789")
                 .build();
     }
 
-    public void saveToBd(ResponseVk.VkUser vkUser, OnDatabaseFinishedListener onDatabaseFinishedListner){
-        ResponseVk.VkUser vkUser1 = new ResponseVk.VkUser();
-        vkUser1.setLastName(vkUser.getLastName());
-        vkUser1.setFirstName(vkUser.getFirstName());
-        vkUser1.setId(1);
-        Completable.fromAction(()->database
-        .dao()
-        .insertUser(vkUser1))
+    public Completable saveToBd(ResponseVk.VkUser vkUser){
+        DataBaseModel dataBaseModel = new DataBaseModel();
+        dataBaseModel.firstName = vkUser.getFirstName();
+        dataBaseModel.lastName = vkUser.getLastName();
+        dataBaseModel.id = 0;
+        return Completable
+                .fromAction(()->database.dao().insertUser(dataBaseModel))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(()->onDatabaseFinishedListner.onFinishedDatabaseWorking(),error-> Log.d(TAG, "saveToBd: error"));
-
+                .observeOn(AndroidSchedulers.mainThread());
     }
-    public void getUserFromBd(OnDatabaseFinishedListener onDatabaseFinishedListner, boolean isNetworkError){
-        disposable = database
+    public Flowable<List<DataBaseModel>> getUserFromBd(){
+        return database
                 .dao()
-                .getUser(1)
+                .getCurrentUser(0L)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(vkUser -> onDatabaseFinishedListner.onFinishedDatabaseWorking(vkUser,isNetworkError),
-                        error->onDatabaseFinishedListner.onFailureDatabaseWorking(error.toString()));
-
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
 }
