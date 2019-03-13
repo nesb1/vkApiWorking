@@ -4,18 +4,20 @@ import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.example.myapplication.API.ApiUtils;
 import com.example.myapplication.Database.DataBaseRepository;
 import com.example.myapplication.Model.DataBaseModel;
 import com.example.myapplication.Model.Repository;
 import com.example.myapplication.Model.ResponseVk;
+import com.example.myapplication.Utils.IdCorrect;
 import com.example.myapplication.di.AppDeleagate;
 import com.example.myapplication.view.MainActivityView;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 
 @InjectViewState
@@ -29,15 +31,25 @@ public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
     @Inject
     CompositeDisposable compositeDisposable;
 
-
+        @Inject
     public MainActivityPresenter() {
-        AppDeleagate.getMainComponent().inject(this);
+        ((AppDeleagate)AppDeleagate.getAppContext()).getMainComponent().inject(this);
     }
 
 
 
-    public void buttonClicked() {
-        Disposable responseVkObservable = repository.makeCallToServer(ApiUtils.VK_USER_ID)
+    public void buttonClicked(String str) {
+        IdCorrect idCorrect = new IdCorrect();
+        if (idCorrect.isCorrectId(str)) TakeServerRequest(str);
+    }
+
+
+
+    private void TakeServerRequest(String userId) {
+        Disposable responseVkObservable = repository.makeCallToServer(userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> saveDataToLocalDatabaseAndShowResult(result), error -> getDataFromLocal(error));
         compositeDisposable.add(responseVkObservable);
         getViewState().showProgressBar();
@@ -64,6 +76,9 @@ public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
         showResult(vkUser.getFirstName() + " " + vkUser.getLastName());
         getViewState().hideProgressBar();
         Disposable disposable = dataBaseRepository.saveToBd(vkUser)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> Log.d("TAG", "Данные успешно сохранены"), error -> Log.d("TAG", "Произошла ошибка при сохранении данных"));
         compositeDisposable.add(disposable);
     }
@@ -73,6 +88,9 @@ public class MainActivityPresenter extends MvpPresenter<MainActivityView> {
     private void getDataFromLocal(Throwable t) {
         Log.d(TAG, "getDataFromLocal: ");
         Disposable disposable = dataBaseRepository.getUserFromBd()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> showResultDatabaseWorking(result.get(0)), error -> showError("Потеряно соединение с сервером"));
         compositeDisposable.add(disposable);
     }

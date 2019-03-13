@@ -5,18 +5,21 @@ import android.content.Context;
 
 public class AppDeleagate extends Application {
 
-    private static MainComponent mainComponent;
+    private MainComponent mainComponent;
     private static Application application;
+
+    public void setMainComponent(MainComponent mainComponent) {
+        this.mainComponent = mainComponent;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         mainComponent = DaggerMainComponent.create();
         application=this;
-
     }
 
-    public static MainComponent getMainComponent (){
+    public MainComponent getMainComponent (){
         return mainComponent;
     }
     public static Application getApplication(){

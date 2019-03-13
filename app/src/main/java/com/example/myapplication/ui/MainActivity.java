@@ -3,6 +3,7 @@ package com.example.myapplication.ui;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
     private TextView textView;
     private Button button;
     private ProgressBar progressBar;
+    private EditText editTextUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +32,9 @@ public class MainActivity extends MvpAppCompatActivity implements MainActivityVi
         progressBar.setVisibility(View.INVISIBLE);
         textView = findViewById(R.id.tv);
         button = findViewById(R.id.button);
+        editTextUserId = findViewById(R.id.editText);
         /*https://api.vk.com/method/users.get?user_id=124205288&v=5.92&access_token=51d3eced51d3eced51d3eced0d51bb81c1551d351d3eced0d868aad2dd1091212c1eb42*/
-        button.setOnClickListener(v -> mainActivityPresenter.buttonClicked());
+        button.setOnClickListener(v -> mainActivityPresenter.buttonClicked(editTextUserId.getText().toString()));
         textView.setText("bolshoyKek");
 
     }

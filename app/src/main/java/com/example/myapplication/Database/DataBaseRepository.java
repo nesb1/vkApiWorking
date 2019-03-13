@@ -10,8 +10,6 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class DataBaseRepository{
 
@@ -29,18 +27,12 @@ public class DataBaseRepository{
         dataBaseModel.lastName = vkUser.getLastName();
         dataBaseModel.id = 0;
         return Completable
-                .fromAction(()->database.dao().insertUser(dataBaseModel))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread());
+                .fromAction(()->database.dao().insertUser(dataBaseModel));
     }
     public Flowable<List<DataBaseModel>> getUserFromBd(){
         return database
                 .dao()
-                .getCurrentUser(0L)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread());
+                .getCurrentUser(0L);
     }
 
 }
